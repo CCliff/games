@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+gem 'pry'
+gem 'sinatra'
+gem 'sinatra-reloader'
+gem 'sinatra-activerecord'
+gem 'activerecord', 'require' => 'active_record'
+gem 'pg'
+gem 'bcrypt'
+
+gem 'random-word'

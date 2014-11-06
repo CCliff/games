@@ -1,0 +1,152 @@
+<h1>Hangman</h1>
+
+<button class="new_game">New Game</button>
+<div class="game">
+	<div class="letters"></div>
+	<div class="hangman">
+		<div class="result"></div>
+		<div class="turns">
+			<h3></h3>
+		</div>
+		<div id="hangman-1"></div>
+		<div id="hangman-2"></div>
+		<div id="hangman-3"></div>
+		<div id="hangman-4"></div>
+		<div id="hangman-5"></div>
+		<div id="hangman-6"></div>
+	</div>
+	<h2 class="word"></h2>
+	<div class="answer">
+		<h2></h2>	
+	</div>
+</div>
+
+
+<script>
+  var $word = $('h2.word');
+	var $answer = $('h2.answer');
+	var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+	var $letters = $('div.letters');
+	var $answer = $('.answer h2');
+	var $turns = $('.turns h3');
+	var $hangman = $('.hangman');
+	var $result = $('.result');
+
+	function showLetters(){
+		$('.letter').removeClass("hidden")
+	}
+
+	function hideLetters(){
+		$('.letter').addClass("hidden")
+	}
+
+	function showWord(word){
+		$word.text(word);
+	}
+	function showAnswer(word){
+		$answer.text(word);
+	}
+	function createAnswer(word){
+		$(word.split('')).each(function(index){
+			var $div = $('<div id=answer-"' + index + '">');
+			$answer.append($div);
+		});
+	}
+
+	function showTurns(turns){
+		$turns.text("Incorrect guesses so far: " + turns)
+	}
+
+	function showMan(turns){
+		$('#hangman-' + turns).show();
+	}
+
+	function hideMan(){
+		$('#hangman-1').hide();
+		$('#hangman-2').hide();
+		$('#hangman-3').hide();
+		$('#hangman-4').hide();
+		$('#hangman-5').hide();
+		$('#hangman-6').hide();
+	}
+
+	function showResult(result){
+		var $message = $('<h1>');
+		var $button = $('<button class="new_game">')
+		if(result === "win"){
+			$message.text("You've Won!");
+			$button.text("Play Again!");
+		} else {
+			$message.text("You've Lost... Why not try again!");
+			$button.text("Try Again!");
+		}
+		$result.show();
+		$result.append($message);
+		$result.append($button);
+		$hangman.append($result);
+	}
+
+	function hideResult(){
+		$result.empty();
+		$result.hide();
+	}
+
+	$(document).on('click', '.new_game', function(e){
+			$.ajax({
+				method: 'GET',
+				url: '/hangman/new',
+				dataType: 'JSON',
+				success: function(data){
+					showAnswer(data);
+					showLetters();
+					$word.empty();
+					$turns.text('');
+					hideMan();
+					hideResult();
+			}
+			});
+		});
+
+
+	$(function(){
+
+		// sets each letter able to be clicked to perform a guess
+		$(alphabet).each(function(index){
+			var $a = $('<button class = "letter">');
+			$a.text(alphabet[index]);
+			$a.attr("href", "#");
+
+			$letters.append($a);
+		});
+
+//creates an ajax call for every letter press, then hides the letter so it can't be chosen again
+//then return the game_state to show what the current guess is
+		$('.letter').click(function(e){
+			e.preventDefault();
+			$(this).addClass("hidden");
+			$.ajax({
+				method: 'POST',
+				url: '/hangman/guess',
+				data: {guess: $(this).text()},
+				dataType: 'JSON',
+				success: function(data){
+					if(data.gameover === "win"){
+						hideLetters();
+						showAnswer(data.game_state);
+						showResult(data.gameover);
+					} else if(data.gameover === "lose"){
+						hideLetters();
+						showWord(data.word);
+						showResult(data.gameover);
+					} else{					
+						showAnswer(data.game_state);
+					}
+					showTurns(data.turn);
+					showMan(data.turn);
+				}
+			});
+		});
+
+	});
+
+</script>
