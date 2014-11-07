@@ -1,0 +1,54 @@
+<h1>TicTacToe</h1>
+
+<button class="new_game">New Game</button>
+<div class="game cf">
+	<div class="tic">
+		<div class="tac" coords="0,0"></div>
+		<div class="tac" coords="1,0"></div>
+		<div class="tac" coords="2,0"></div>
+		<div class="tac" coords="0,1"></div>
+		<div class="tac" coords="1,1"></div>
+		<div class="tac" coords="2,1"></div>
+		<div class="tac" coords="0,2"></div>
+		<div class="tac" coords="1,2"></div>
+		<div class="tac" coords="2,2"></div>
+	</div>	
+</div>
+
+<script> 
+	var $tac = $('.tac');
+	var $new_game = $('.new_game')
+
+	$(function(){
+
+		$tac.on('click', function(){
+			$choice = $(this) 
+			$.ajax({
+				method: 'POST',
+				url: '/tictactoe/turn',
+				dataType: 'JSON',
+				data: {
+					index: $choice.attr("index"),
+					coords: $choice.attr("coords")
+				},
+				success: function(data){
+					$choice.text(data);
+				}
+			});
+		});
+
+		$new_game.on('click', function(){
+			$.ajax({
+				method: 'GET',
+				url: '/tictactoe/new',
+				success: function(){
+					$tac.each(function(){
+						$(this).text('');
+					});
+				}
+			});
+		});
+
+	});
+
+</script>

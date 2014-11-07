@@ -13,9 +13,8 @@ class HangmanController < ApplicationController
       game_state << "_"
     end
     num_guesses = 0
-# ******NEED TO REPLACE user_id: WITH current_user *******
-    HangmanGame.find_by(user_id: 1).destroy
-    HangmanGame.create(user_id: 1, word: word, guesses: "", game_state: game_state, num_guesses: num_guesses)
+    HangmanGame.find_by(user_id: current_user.id).destroy if HangmanGame.find_by(user_id: current_user.id)
+    HangmanGame.create(user_id: current_user.id, word: word, guesses: "", game_state: game_state, num_guesses: num_guesses)
     game_state.to_json
   end
 
@@ -23,8 +22,7 @@ class HangmanController < ApplicationController
     hash = {}
     gameover = false
     guess = params[:guess]
-# ******NEED TO REPLACE user_id: WITH current_user *******
-    game = HangmanGame.find_by(user_id: 1)
+    game = HangmanGame.find_by(user_id: current_user.id)
     word = game.word
     game_state = game.game_state
     new_game_state = game_state.clone

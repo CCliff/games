@@ -23,3 +23,4 @@ end
 
 map('/'){ run HomeController }
 map('/hangman'){ run HangmanController }
+map('/tictactoe'){ run TictactoeController }

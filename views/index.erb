@@ -1,1 +1,88 @@
 <h1>Welcome</h1>
+
+<button class="login">Login!</button>
+<button class="register">Register!</button>
+
+<script>
+	$login = $('.login');
+	$register = $('.register');
+
+	$header = $('<h1>');
+	$close = $('<a href="#">x</a>');
+	$username = $('<input type="text" name="username">');
+	$password = $('<input type="password" name="password">')
+	$submit_register = $('<input type="submit" class="submit-register">')
+	$submit_login = $('<input type="submit" class="submit-login">')
+
+	function create_submit(type){
+		return $('<input type="submit" class="' + type + '">')
+	}
+	
+	$(document).on('click', '.container a', function(e){
+		e.preventDefault();
+		$container.remove();
+	});
+
+	$(function(){
+
+		$register.on('click', function(){
+			$('.container').remove();
+			$container = $('<div class="container">');
+			$container.append($close);
+			$header.text("Sign Up Now!");
+			$container.append($header);
+			$form = $('<form>');
+			$form.append($username);
+			$form.append($password);
+			$form.append($submit_register);
+			$container.append($form)
+			$('body').append($container)
+		});
+
+		$submit_register.on('click', function(e){
+			e.preventDefault();
+			$.ajax({
+				method: 'POST',
+				url: '/register',
+				data: {
+					username: $username.val(),
+					password: $password.val()
+				},
+				success: function(data){
+					console.log(data);
+				}
+			});
+		});
+
+		$login.on('click', function(){
+			$('.container').remove();
+			$container = $('<div class="container">');
+			$container.append($close);
+			$header.text("Welcome Back!");
+			$container.append($header);
+			$form = $('<form>');
+			$form.append($username);
+			$form.append($password);
+			$form.append($submit_login);
+			$container.append($form)
+			$('body').append($container)
+		});
+
+		$submit_login.on('click', function(e){
+			e.preventDefault();
+			$.ajax({
+				method: 'POST',
+				url: '/login',
+				data: {
+					username: $username.val(),
+					password: $password.val()
+				},
+				success: function(data){
+					console.log(data);
+				}
+			});
+		});
+
+	});
+
+</script>

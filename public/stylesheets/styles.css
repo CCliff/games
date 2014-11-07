@@ -126,3 +126,41 @@ div#hangman-6 {
 	text-align: center;
 	margin-top: 200px;
 }
+
+#tictactoe{
+	width: 100%;
+	height: 100%;
+}
+
+.tic {
+	width: 60%;
+	margin: auto;
+}
+
+.tac {
+	width: 173px;
+	height: 173px;
+	margin: 0px 0px;
+	cursor: pointer;
+	border: 3px solid black;
+	float: left;
+	font-size: 10em;
+	font-family: sans;
+	text-align: center;
+}
+
+
+
+
+
+/*CLEARFIX*/
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+/*CLEARFIX*/
