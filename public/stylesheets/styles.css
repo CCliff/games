@@ -149,7 +149,14 @@ div#hangman-6 {
 	text-align: center;
 }
 
-
+.opponents-container {
+	position: absolute;
+	top: 111px;
+	background: #ccc;
+	opacity: .9;
+	width: 922px;
+	height: 560px;
+}
 
 
 

@@ -1,6 +1,7 @@
 <h1>TicTacToe</h1>
 
-<button class="new_game">New Game</button>
+<button class="get_opponents">Find Opponents</button>
+<button class="current_games">Current Games</button>
 <div class="game cf">
 	<div class="tic">
 		<div class="tac" coords="0,0"></div>
@@ -16,35 +17,107 @@
 </div>
 
 <script> 
+	var $tic = $('.tic');
 	var $tac = $('.tac');
+	var $get_opponents = $('.get_opponents');
 	var $new_game = $('.new_game')
+	var $current_games = $('.current_games')
+
+	$(document).on('click', '.opponents-container a', function(e){
+		e.preventDefault();
+		$('.opponents-container').remove();
+	});
+
+	$(document).on('click', '.opponent', function(e){
+		e.preventDefault();
+		var opponent_id = $(this).attr('id')
+		$.ajax({
+			method: 'POST',
+			url: '/tictactoe/new',
+			data: {id: opponent_id},
+			success: function(data){
+					$tic.attr('opp', opponent_id )
+			}
+		});
+	});
+
+	$(document).on('click', '.opponent-game', function(e){
+		e.preventDefault();
+		var game_id = $(this).attr('id')
+		$.ajax({
+			method: 'GET',
+			url: '/tictactoe/load',
+			data: {id: game_id},
+			success: function(data){
+					data.split('');
+					console.log(data);
+			}
+		});
+	});
 
 	$(function(){
 
+		$get_opponents.on('click', function(){
+			$.ajax({
+				method: 'GET',
+				url: '/tictactoe/opponents',
+				dataType: 'JSON',
+				success: function(data){
+					var $div = $('<div class="opponents-container">');
+					var $a = $('<a href="#">');
+					$a.text('x');
+					$div.append($a);
+					var $ul = $('<ul class="opponents">');
+
+					$(data).each(function(i, object){
+						var $li = ('<li class="opponent" id="' + object.id +'"><a href="#">'+ object.username);
+						$ul.append($li);
+					})
+
+					$div.append($ul);
+					$('body').append($div);
+				}
+			});
+		});
+
+		$current_games.on('click', function(){
+			$.ajax({
+				method: 'GET',
+				url: '/tictactoe/games',
+				dataType: 'JSON',
+				success: function(data){
+					var $div = $('<div class="opponents-container">');
+					var $a = $('<a href="#">');
+					$a.text('x');
+					$div.append($a);
+					var $ul = $('<ul class="opponents">');
+					$(data).each(function(i, array){
+						console.log(array);
+						var $li = $('<li class="opponent-game" id="'+array[1].id+'">');
+						var $a = $('<a href="#">')
+						$a.text(array[0].username);
+						$li.append($a);
+						$ul.append($li);
+					});
+
+					$div.append($ul);
+					$('body').append($div);
+				}
+			});
+		});
+
 		$tac.on('click', function(){
-			$choice = $(this) 
+			$choice = $(this);
 			$.ajax({
 				method: 'POST',
 				url: '/tictactoe/turn',
 				dataType: 'JSON',
 				data: {
-					index: $choice.attr("index"),
+					opponent_id: $tic.attr('opp'),
 					coords: $choice.attr("coords")
 				},
 				success: function(data){
 					$choice.text(data);
-				}
-			});
-		});
-
-		$new_game.on('click', function(){
-			$.ajax({
-				method: 'GET',
-				url: '/tictactoe/new',
-				success: function(){
-					$tac.each(function(){
-						$(this).text('');
-					});
 				}
 			});
 		});
