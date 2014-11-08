@@ -4,15 +4,15 @@
 <button class="current_games">Current Games</button>
 <div class="game cf">
 	<div class="tic">
-		<div class="tac" coords="0,0"></div>
-		<div class="tac" coords="1,0"></div>
-		<div class="tac" coords="2,0"></div>
-		<div class="tac" coords="0,1"></div>
-		<div class="tac" coords="1,1"></div>
-		<div class="tac" coords="2,1"></div>
-		<div class="tac" coords="0,2"></div>
-		<div class="tac" coords="1,2"></div>
-		<div class="tac" coords="2,2"></div>
+		<div class="tac" coords="0,0" index="0"></div>
+		<div class="tac" coords="1,0" index="1"></div>
+		<div class="tac" coords="2,0" index="2"></div>
+		<div class="tac" coords="0,1" index="3"></div>
+		<div class="tac" coords="1,1" index="4"></div>
+		<div class="tac" coords="2,1" index="5"></div>
+		<div class="tac" coords="0,2" index="6"></div>
+		<div class="tac" coords="1,2" index="7"></div>
+		<div class="tac" coords="2,2" index="8"></div>
 	</div>	
 </div>
 
@@ -35,8 +35,10 @@
 			method: 'POST',
 			url: '/tictactoe/new',
 			data: {id: opponent_id},
+			dataType: 'JSON',
 			success: function(data){
-					$tic.attr('opp', opponent_id )
+					load_board(data[1]);
+					$tic.attr('id', data[0]);
 			}
 		});
 	});
@@ -49,11 +51,21 @@
 			url: '/tictactoe/load',
 			data: {id: game_id},
 			success: function(data){
-					data.split('');
-					console.log(data);
+				var result = data.substring(1, data.length-1);
+				load_board(result);
+				$tic.attr('id', game_id);
 			}
 		});
 	});
+
+	function load_board(game_state){
+		$tac.text('');
+		$(game_state.split('')).each(function(i, x){
+			if(x !== "0"){
+				$('.tac[index="'+i+'"]').text(x);
+			}
+		});
+	}
 
 	$(function(){
 
@@ -91,11 +103,10 @@
 					$a.text('x');
 					$div.append($a);
 					var $ul = $('<ul class="opponents">');
-					$(data).each(function(i, array){
-						console.log(array);
-						var $li = $('<li class="opponent-game" id="'+array[1].id+'">');
+					$(data).each(function(i, id){
+						var $li = $('<li class="opponent-game" id="'+id+'">');
 						var $a = $('<a href="#">')
-						$a.text(array[0].username);
+						$a.text(id);
 						$li.append($a);
 						$ul.append($li);
 					});
@@ -113,11 +124,19 @@
 				url: '/tictactoe/turn',
 				dataType: 'JSON',
 				data: {
-					opponent_id: $tic.attr('opp'),
-					coords: $choice.attr("coords")
+					coords: $choice.attr("coords"),
+					game_id: $tic.attr('id')
 				},
 				success: function(data){
-					$choice.text(data);
+					console.log(data[1])
+					load_board(data[1]);
+					if(data[0] == 'X'){
+						console.log('X wins');
+					}	else if (data[0] == 'O'){
+						console.log('O wins');
+					} else if (data[0] == 'tie'){
+						console.log('TIE!');
+					}
 				}
 			});
 		});

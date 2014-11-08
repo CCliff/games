@@ -1,5 +1,8 @@
 class TictactoeGame < ActiveRecord::Base
 
+  has_many :ttt_player_states
+  has_many :users, :through => :ttt_player_states
+
   def self.check_status(game_state)
     # check if any row is won
     game_state.each do |row|
@@ -14,10 +17,11 @@ class TictactoeGame < ActiveRecord::Base
       column = []
       game_state.map do |row|
         column << row[i]
-        if column.uniq.length == 1 && column[0] != "0"
-          return column[0]
-        end
       end
+      if column.uniq.length == 1 && column[0] != "0"
+        return column[0]
+      end
+      i += 1
     end
 
     #check diags
@@ -28,7 +32,7 @@ class TictactoeGame < ActiveRecord::Base
 
     #check for tie
 
-    unless game_state.flatten.incude?("0")
+    unless game_state.flatten.include?("0")
       return "tie"
     end
 
