@@ -12,7 +12,7 @@ class TictactoeController < ApplicationController
   get '/games' do
 
     user = User.find(current_user.id)
-    games = user.tictactoe_games
+    games = user.tictactoe_games.where(active?: true)
     game_array = []
     games.map do  |game|
       game_array << game.id
@@ -32,7 +32,7 @@ class TictactoeController < ApplicationController
   post '/new' do
     game_state = [[0,0,0],[0,0,0],[0,0,0]]
     db_game_state = game_state.flatten.join('')
-    game = TictactoeGame.create(game_state: db_game_state)
+    game = TictactoeGame.create(game_state: db_game_state, active?: true)
 
     TttPlayerState.create(user_id: current_user.id, tictactoe_game_id: game.id, turn?: true, symbol: 'X')
     TttPlayerState.create(user_id: params[:id], tictactoe_game_id: game.id, turn?: false, symbol: 'O')
@@ -51,10 +51,20 @@ class TictactoeController < ApplicationController
       new_game_state = game.game_state.split('').each_slice(3).to_a
       new_game_state[y.to_i][x.to_i] = player_state.symbol
       gameover = TictactoeGame.check_status(new_game_state)
+      if gameover == 'X' || gameover == 'O'
+        player_state.update(status: 'won')
+        opponent_state.update(status: 'loss')
+        game.update(active?: false)
+      elsif gameover == 'tie'
+        player_state.update(status: 'tie')
+        opponent_state.update(status: 'tie')
+        game.update(active?: false)
+      else
+        opponent_state.update(turn?: true)
+      end
+      player_state.update(turn?: false)
       new_db_game_state = new_game_state.flatten.join('')
       game.update(game_state: new_db_game_state)
-      player_state.update(turn?: false)
-      opponent_state.update(turn?: true)
       data << gameover
       data << new_db_game_state
       data.to_json

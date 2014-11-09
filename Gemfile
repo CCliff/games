@@ -6,5 +6,7 @@ gem 'sinatra-activerecord'
 gem 'activerecord', 'require' => 'active_record'
 gem 'pg'
 gem 'bcrypt'
+gem 'httparty'
+gem 'libxml-ruby'
 
 gem 'random-word'

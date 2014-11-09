@@ -26,7 +26,7 @@ class TictactoeGame < ActiveRecord::Base
 
     #check diags
 
-    if (game_state[0][0] == game_state[1][1] && game_state[1][1] == game_state[2][2]) || (game_state[0][2] == game_state[1][1] && game_state[1][1] == game_state[0][2]) && game_state[1][1] != "0"
+    if (game_state[0][0] == game_state[1][1] && game_state[1][1] == game_state[2][2]) || (game_state[0][2] == game_state[1][1] && game_state[1][1] == game_state[2][0]) && game_state[1][1] != "0"
       return game_state[1][1]
     end
 

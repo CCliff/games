@@ -128,14 +128,20 @@
 					game_id: $tic.attr('id')
 				},
 				success: function(data){
-					console.log(data[1])
 					load_board(data[1]);
-					if(data[0] == 'X'){
-						console.log('X wins');
-					}	else if (data[0] == 'O'){
-						console.log('O wins');
+					if(data[0] == 'X' || data[0] == 'O'){
+						var $container = ('<div class="container">');
+						var $h1 = ('<h1>');
+						$h1.text(data[0] + " WINS!");
+						$container.append($h1);
+						$('body').append($container);
+						console.log(data[0], 'wins');
 					} else if (data[0] == 'tie'){
-						console.log('TIE!');
+						var $container = ('<div class="container">');
+						var $h1 = ('<h1>');
+						$h1.text("TIE!");
+						$container.append($h1)
+						$('body').append($container)
 					}
 				}
 			});
