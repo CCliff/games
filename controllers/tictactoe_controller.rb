@@ -1,5 +1,9 @@
 class TictactoeController < ApplicationController
 
+  before do
+    authenticate!
+  end
+
   get '/' do
     leader = Win.order(tictactoe: :desc).limit(1)[0]
     leader_id = leader.user_id
@@ -29,11 +33,15 @@ class TictactoeController < ApplicationController
   end
 
   get '/load' do
+    data = []
     game_id = params[:id]
     game = TictactoeGame.find(game_id)
     game_state = game.game_state
 
-    game_state.to_json
+    player_state = TttPlayerState.find_by(user_id: current_user.id, tictactoe_game_id: game.id)
+    data << player_state.status
+    data << game_state
+    data.to_json
   end
 
   post '/new' do

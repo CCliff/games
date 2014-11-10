@@ -21,4 +21,12 @@ class HomeController < ApplicationController
     end
   end
 
+  get '/profile' do
+    authenticate!
+    @user = User.find(current_user.id)
+    @wins = Win.find_by(user_id: current_user.id)
+
+    erb :profile
+  end
+
 end
