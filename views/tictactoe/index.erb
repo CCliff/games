@@ -67,6 +67,23 @@
 			}
 		});
 	}
+
+	function checkStatus(status){
+		var $statusContainer = $('<div class="status-container">');
+		var $h1 = $('<h1>');
+		if(status){
+			if(status == 'won'){
+				$h1.text("THREE IN A ROW. YOU WIN!");
+			}else if(status == 'loss'){
+				$h1.text("You lose... Dundundunnnnnnn");
+			}else if(status == 'tie'){
+				$h1.text("Tie game!");
+			}
+			$statusContainer.append($h1);
+			$('body').append($statusContainer);
+		}
+	}
+
 	function check5Minutes(){
 		var x = 0
 		var check = setInterval(function(){
@@ -153,20 +170,8 @@
 				},
 				success: function(data){
 					load_board(data[1]);
+					checkStatus(data[2]);
 					check5Minutes();
-					var $statusContainer = $('<div class="status-container">');
-					var $h1 = $('<h1>');
-					if(data[2]){
-						if(data[2] == 'won'){
-							$h1.text("THREE IN A ROW. YOU WIN!");
-						}else if(data[2] == 'loss'){
-							$h1.text("You lose... Dundundunnnnnnn");
-						}else if(data[2] == 'tie'){
-							$h1.text("Tie game!");
-						}
-						$statusContainer.append($h1);
-						$('body').append($statusContainer);
-					}
 				}
 			});
 		});
