@@ -18,13 +18,11 @@ class HangmanController < ApplicationController
 
   get '/new' do
     word = HangmanGame.create_word
-    game_state = ""
-    word.length.times do
-      game_state << "_"
-    end
+    game_state = HangmanGame.get_game_state(word)
     num_guesses = 0
     HangmanGame.find_by(user_id: current_user.id).destroy if HangmanGame.find_by(user_id: current_user.id)
     HangmanGame.create(user_id: current_user.id, word: word, guesses: "", game_state: game_state, num_guesses: num_guesses)
+
     game_state.to_json
   end
 
@@ -40,31 +38,15 @@ class HangmanController < ApplicationController
     user_guesses = guess + user_guesses
     num_guesses = game.num_guesses
 
-    unless word.include? guess
-      num_guesses += 1
-    end
+    num_guesses = HangmanGame.count_guesses(word, guess, num_guesses)
 
-    i=0
-    index_array = []
-    while i < word.length
-      if guess == word[i]
-        index_array << i
-      end
-      i += 1
-    end
+    index_array = HangmanGame.create_index_array(word, guess)
 
     index_array.each do |index|
       new_game_state[index] = guess
     end
 
-    if new_game_state == word
-      gameover = "win"
-      win = Win.find_by(user_id: current_user.id)
-      hangman_wins = win.hangman
-      win.update(hangman: hangman_wins + 1)
-    elsif num_guesses == 6
-      gameover = "lose"
-    end
+    gameover = HangmanGame.check_status(new_game_state, word, num_guesses, current_user.id)
 
     game.update(guesses: user_guesses, game_state: new_game_state, num_guesses: num_guesses)
 
