@@ -55,7 +55,7 @@ words = <<-eos
   application doctor  injure  population  teach
   appoint does  inside  position  teacher
   appreciate  dollar  inspect possible  tell
-  April don’t instead post  ten
+  April instead post  ten
   are done  intend  pound tenth
   argument  door  interest  power term
   army  doubt into  practical terrible
@@ -160,8 +160,8 @@ words = <<-eos
   century foreign motion  section where
   certain forenoon  mountain  subject whether
   chain forget  move  secure  which
-  change  form  Mr. see while
-  character fortune Mrs.  seem  who
+  change  form see while
+  character fortune  seem  who
   charge  forty much  seen  whole
   check forward must  select  whom
   chief found my  senate  whose
