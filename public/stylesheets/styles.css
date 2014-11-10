@@ -1,8 +1,40 @@
+nav {
+    background: black;
+    height: 40px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+}
+
+nav li {
+    float: left;
+    line-height: 40px;
+    font-weight: 600;
+    margin-right: 23px;
+}
+
+nav a {
+    color: white;
+}
+
+ul.opponents {
+    width: 430px;
+    margin-right: 0;
+}
+
+.opponents li {
+    display: inline-block;
+    width: 100px;
+}
+
 .game {
 	width: 900px;
 	margin: 10px auto;
 	border: 2px solid #ccc;
 	padding: 10px;
+	position: relative;
 }
 
 .letters {
@@ -154,8 +186,21 @@ div#hangman-6 {
 	top: 111px;
 	background: #ccc;
 	opacity: .9;
-	width: 922px;
+	width: 652px;
+	height: 330px;
+	overflow: scroll;
+}
+
+.status-container {
+	position: absolute;
+	background: #ccc;
+	opacity: .5;
+	width: 100%;
 	height: 560px;
+	text-align: center;
+	line-height: 400px;
+	top: 0;
+	left: 0;
 }
 
 

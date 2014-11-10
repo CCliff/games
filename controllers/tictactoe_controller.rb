@@ -10,8 +10,7 @@ class TictactoeController < ApplicationController
     @number_wins = leader.tictactoe.to_s
     leader_user = User.find(leader_id)
     @leader_username = leader_user.username
-    # @alphabet = ('a'..'z').to_a
-    @word = "new"
+
     erb :'tictactoe/index'
   end
 
@@ -41,6 +40,7 @@ class TictactoeController < ApplicationController
     player_state = TttPlayerState.find_by(user_id: current_user.id, tictactoe_game_id: game.id)
     data << player_state.status
     data << game_state
+    data << player_state.symbol
     data.to_json
   end
 
@@ -49,10 +49,10 @@ class TictactoeController < ApplicationController
     db_game_state = game_state.flatten.join('')
     game = TictactoeGame.create(game_state: db_game_state, active?: true)
 
-    TttPlayerState.create(user_id: current_user.id, tictactoe_game_id: game.id, turn?: true, symbol: 'X')
+    player = TttPlayerState.create(user_id: current_user.id, tictactoe_game_id: game.id, turn?: true, symbol: 'X')
     TttPlayerState.create(user_id: params[:id], tictactoe_game_id: game.id, turn?: false, symbol: 'O')
 
-    data = [game.id, db_game_state]
+    data = [game.id, db_game_state, player.symbol]
     data.to_json
   end
 
@@ -64,32 +64,35 @@ class TictactoeController < ApplicationController
     opponent_state = TttPlayerState.where.not(user_id:current_user).where(tictactoe_game_id: game.id)[0]
     if player_state.turn? == true
       new_game_state = game.game_state.split('').each_slice(3).to_a
-      new_game_state[y.to_i][x.to_i] = player_state.symbol
-      gameover = TictactoeGame.check_status(new_game_state)
-      if gameover == 'X' || gameover == 'O'
-        player_state.update(status: 'won')
-        opponent_state.update(status: 'loss')
-        game.update(active?: false)
-        win = Win.find_by(user_id: current_user.id)
-        tictactoe_wins = win.tictactoe
-        win.update(tictactoe: tictactoe_wins + 1)
-      elsif gameover == 'tie'
-        player_state.update(status: 'tie')
-        opponent_state.update(status: 'tie')
-        game.update(active?: false)
-      else
-        opponent_state.update(turn?: true)
+      if new_game_state[y.to_i][x.to_i] == '0'
+        new_game_state[y.to_i][x.to_i] = player_state.symbol
+        gameover = TictactoeGame.check_status(new_game_state)
+        if gameover == 'X' || gameover == 'O'
+          player_state.update(status: 'won')
+          opponent_state.update(status: 'loss')
+          game.update(active?: false)
+          win = Win.find_by(user_id: current_user.id)
+          tictactoe_wins = win.tictactoe
+          win.update(tictactoe: tictactoe_wins + 1)
+        elsif gameover == 'tie'
+          player_state.update(status: 'tie')
+          opponent_state.update(status: 'tie')
+          game.update(active?: false)
+        else
+          opponent_state.update(turn?: true)
+        end
+        player_state.update(turn?: false)
+        new_db_game_state = new_game_state.flatten.join('')
+        game.update(game_state: new_db_game_state)
+
+        data << gameover
+        data << new_db_game_state
+        data << player_state.status
+        data.to_json
+
       end
-      player_state.update(turn?: false)
-      new_db_game_state = new_game_state.flatten.join('')
-      game.update(game_state: new_db_game_state)
-
-      data << gameover
-      data << new_db_game_state
-      data << player_state.status
-      data.to_json
     else
-
+      data = 'exists'
     end
   end
 
