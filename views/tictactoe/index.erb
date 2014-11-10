@@ -26,6 +26,16 @@
 	var $game = $('.game');
 	var check
 
+	function gameReady(symbol, game_state, status){
+		if(symbol){
+			addSymbol(symbol);
+		}
+		loadBoard(game_state);
+		if(status){
+			checkStatus(status);
+		}
+	}
+
 	function addSymbol(symbol){
 		$('.game h2').remove()
 ;		$h2 = $('<h2>');
@@ -48,9 +58,8 @@
 			data: {id: opponent_id},
 			dataType: 'JSON',
 			success: function(data){
-					loadBoard(data[1]);
-					$tic.attr('id', data[0]);
-					addSymbol(data[2]);
+				gameReady(data.symbol, data.game_state, false)
+					$tic.attr('id', data.game_state);
 					$('.status-container').remove();
 			}
 		});
@@ -65,11 +74,9 @@
 			data: {id: game_id},
 			dataType: 'JSON',
 			success: function(data){
-				loadBoard(data[1]);
-				addSymbol(data[2]);
-				checkStatus(data[0]);
-				check5Minutes();
 				$tic.attr('id', game_id);
+				gameReady(data.symbol, data.game_state, data.status)
+				check5Minutes();
 			}
 		});
 	});
@@ -115,9 +122,8 @@
 					data: {id: game_id},
 					dataType: 'JSON',
 					success: function(data){
-						loadBoard(data[1]);
-						checkStatus(data[0]);
 						$tic.attr('id', game_id);
+						gameReady(data.symbol, data.game_state, data.status)
 					}
 				});
 			}
@@ -192,10 +198,8 @@
 						game_id: $tic.attr('id')
 					},
 					success: function(data){
-						debugger;
 						if (data !== 'exists'){
-							loadBoard(data[1]);
-							checkStatus(data[2]);
+							gameReady(false, data.game_state, data.status)
 							check5Minutes();
 						} else {
 							console.log("You can't make a move on an existing move!");
