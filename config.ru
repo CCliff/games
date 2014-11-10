@@ -7,6 +7,8 @@ ActiveRecord::Base.establish_connection(
   :database => "games_db"
 )
 
+require './controllers/application_controller'
+
 ROOT_PATH = Dir.pwd
 Dir[ROOT_PATH+"/helpers/*.rb"].each do |file|
   require file
