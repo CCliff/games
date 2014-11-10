@@ -1,8 +1,18 @@
 class HangmanController < ApplicationController
 
+  before do
+    authenticate!
+  end
+
   get '/' do
-    @alphabet = ('a'..'z').to_a
+    leader = Win.order(hangman: :desc).limit(1)[0]
+    leader_id = leader.user_id
+    @number_wins = leader.hangman.to_s
+    leader_user = User.find(leader_id)
+    @leader_username = leader_user.username
+    # @alphabet = ('a'..'z').to_a
     @word = "new"
+
     erb :'hangman/index'
   end
 
@@ -49,6 +59,9 @@ class HangmanController < ApplicationController
 
     if new_game_state == word
       gameover = "win"
+      win = Win.find_by(user_id: current_user.id)
+      hangman_wins = win.hangman
+      win.update(hangman: hangman_wins + 1)
     elsif num_guesses == 6
       gameover = "lose"
     end

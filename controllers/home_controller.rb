@@ -8,6 +8,7 @@ class HomeController < ApplicationController
     user = User.new(username: params[:username])
     user.password = params[:password]
     user.save!
+    Win.create(user_id: user.id)
   end
 
   post '/login' do

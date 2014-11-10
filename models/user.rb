@@ -2,6 +2,7 @@ require 'bcrypt'
 class User < ActiveRecord::Base
   has_many :ttt_player_states
   has_many :tictactoe_games, :through => :ttt_player_states
+  has_one :win
 
   validates :username, uniqueness: true
   include BCrypt

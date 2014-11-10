@@ -1,6 +1,13 @@
 class TictactoeController < ApplicationController
 
   get '/' do
+    leader = Win.order(tictactoe: :desc).limit(1)[0]
+    leader_id = leader.user_id
+    @number_wins = leader.tictactoe.to_s
+    leader_user = User.find(leader_id)
+    @leader_username = leader_user.username
+    # @alphabet = ('a'..'z').to_a
+    @word = "new"
     erb :'tictactoe/index'
   end
 
@@ -55,6 +62,9 @@ class TictactoeController < ApplicationController
         player_state.update(status: 'won')
         opponent_state.update(status: 'loss')
         game.update(active?: false)
+        win = Win.find_by(user_id: current_user.id)
+        tictactoe_wins = win.tictactoe
+        win.update(tictactoe: tictactoe_wins + 1)
       elsif gameover == 'tie'
         player_state.update(status: 'tie')
         opponent_state.update(status: 'tie')
@@ -65,8 +75,10 @@ class TictactoeController < ApplicationController
       player_state.update(turn?: false)
       new_db_game_state = new_game_state.flatten.join('')
       game.update(game_state: new_db_game_state)
+
       data << gameover
       data << new_db_game_state
+      data << player_state.status
       data.to_json
     else
 

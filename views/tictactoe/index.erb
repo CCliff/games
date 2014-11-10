@@ -1,4 +1,5 @@
 <h1>TicTacToe</h1>
+<h2>Current Leader: <%= @leader_username + " " + @number_wins +" wins." %></h2>	
 
 <button class="get_opponents">Find Opponents</button>
 <button class="current_games">Current Games</button>
@@ -66,8 +67,31 @@
 			}
 		});
 	}
+	function check5Minutes(){
+		var x = 0
+		var check = setInterval(function(){
+			if (++x === 10){
+				window.clearInterval(check);
+			}
+			game_id = $tic.attr('id');
+			if(game_id){
+				$.ajax({
+					method: 'GET',
+					url: '/tictactoe/load',
+					data: {id: game_id},
+					success: function(data){
+						var result = data.substring(1, data.length-1);
+						load_board(result);
+						$tic.attr('id', game_id);
+					}
+				});
+			}
+		}, 1000 * 30);
+	}
 
 	$(function(){
+
+		check5Minutes();
 
 		$get_opponents.on('click', function(){
 			$.ajax({
@@ -129,19 +153,19 @@
 				},
 				success: function(data){
 					load_board(data[1]);
-					if(data[0] == 'X' || data[0] == 'O'){
-						var $container = ('<div class="container">');
-						var $h1 = ('<h1>');
-						$h1.text(data[0] + " WINS!");
-						$container.append($h1);
-						$('body').append($container);
-						console.log(data[0], 'wins');
-					} else if (data[0] == 'tie'){
-						var $container = ('<div class="container">');
-						var $h1 = ('<h1>');
-						$h1.text("TIE!");
-						$container.append($h1)
-						$('body').append($container)
+					check5Minutes();
+					var $statusContainer = $('<div class="status-container">');
+					var $h1 = $('<h1>');
+					if(data[2]){
+						if(data[2] == 'won'){
+							$h1.text("THREE IN A ROW. YOU WIN!");
+						}else if(data[2] == 'loss'){
+							$h1.text("You lose... Dundundunnnnnnn");
+						}else if(data[2] == 'tie'){
+							$h1.text("Tie game!");
+						}
+						$statusContainer.append($h1);
+						$('body').append($statusContainer);
 					}
 				}
 			});
